@@ -2,7 +2,19 @@
 import sys
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QScrollArea, QGridLayout, QLabel, QApplication, QWidget, QVBoxLayout, QLineEdit, QMainWindow, QMenu, QRadioButton
+from PyQt6.QtWidgets import (
+    QPushButton, 
+    QScrollArea, 
+    QGridLayout, 
+    QLabel, 
+    QApplication, 
+    QWidget, 
+    QVBoxLayout, 
+    QLineEdit, 
+    QMainWindow, 
+    QMenu, 
+    QRadioButton,
+)
 
 
 class MainWindow(QMainWindow):
@@ -11,33 +23,44 @@ class MainWindow(QMainWindow):
         self.initGUI()
 
     def initGUI(self):
+        # area for scrolling option
         self.scroll = QScrollArea()
-        self.resize(600, 300)
+
+        self.resize(900, 800)
         self.setWindowTitle("Anki Card Generator")
 
-        self.label = QLabel("Text")
+        # 
+
+    
+        self.label = QLabel("Введите слово или словосочетание для поиска:")
         self.input = QLineEdit()
-        
+        self.button = QPushButton("Поиск!")
 
         layout = QGridLayout()
-        layout.setContentsMargins(50, 80, 50, 80)
+        layout.setContentsMargins(40, 40, 40, 40)
         layout.setSpacing(10)
-        layout.addWidget(self.input, 0, 0)
-        layout.addWidget(self.label, 1, 0)
+        layout.addWidget(self.input, 1, 0)
+        layout.addWidget(self.label, 0, 0)
+        layout.addWidget(self.button, 1, 1)
+
         for i in range(35):
             self.radio = QRadioButton(f"Банк, у которого был «актив» (в форме займа клиенту) в размере $100,000 в июне, к июлю может получить ноль.{i}", self)
             self.radio.toggled.connect(self.showDetails)
             layout.addWidget(self.radio, i+2, 0)
 
+        # if last one checked - create another one lineedit for my own text
 
+        # change settings for scrolling
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.scroll.setWidgetResizable(True)
+
+        # create a widget to set it as central
         container = QWidget()
         container.setLayout(layout)
         self.scroll.setWidget(container)
 
-
+        # setting the central widget to show it 
         self.setCentralWidget(self.scroll)
 
 
