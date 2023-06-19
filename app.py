@@ -28,22 +28,17 @@ class MainWindow(QMainWindow):
         self.scroll_area1 = QScrollArea()
         self.scroll_area2 = QScrollArea()
 
+        self.scroll_area1.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.scroll_area1.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.scroll_area1.setWidgetResizable(True)
+
+        # make a function for this one
+        self.scroll_area1.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.scroll_area1.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.scroll_area1.setWidgetResizable(True)
+
         self.setup_ui()
 
-
-    #def initGUI(self):
-
-
-
-        # change settings for scrolling
-        #self.scroll1.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        #self.scroll1.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        #self.scroll1.setWidgetResizable(True)
-
-      
-
-        # setting the central widget to show it 
-        #self.setCentralWidget(self.scroll)
 
     def setup_ui(self):
         central_widget = QWidget()
@@ -62,7 +57,9 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.stacked_widget)
         self.setCentralWidget(central_widget)
-
+        
+    ''' 
+        Back and forward arrows ------
         button1 = QPushButton("Scroll Area 1")
         button2 = QPushButton("Scroll Area 2")
         layout.addWidget(button1)
@@ -70,7 +67,7 @@ class MainWindow(QMainWindow):
 
         # Подключаем кнопки к слотам переключения scroll area
         button1.clicked.connect(self.show_scroll_area1)
-        button2.clicked.connect(self.show_scroll_area2)
+        button2.clicked.connect(self.show_scroll_area2)'''
 
     def show_scroll_area1(self):
         self.stacked_widget.setCurrentWidget(self.scroll_area1)
@@ -78,11 +75,13 @@ class MainWindow(QMainWindow):
     def show_scroll_area2(self):
         self.stacked_widget.setCurrentWidget(self.scroll_area2)
 
-    def initLayout1(self, widget):
+    def initLayout1(self, widget) -> QGridLayout:
         label = QLabel("Введите слово или словосочетание для поиска:")
         input = QLineEdit()
+
         button = QPushButton("Поиск!")
- 
+        button.clicked.connect(self.show_scroll_area2)
+
         layout = QGridLayout(widget)
         layout.setContentsMargins(40, 40, 40, 40)
         layout.setSpacing(10)
@@ -99,7 +98,7 @@ class MainWindow(QMainWindow):
 
         # if last one checked - create another one lineedit for my own text
 
-    def initLayout2(self, widget):
+    def initLayout2(self, widget) -> QGridLayout:
         label = QLabel("Введите слово или словосочетание для поиска:")
         input = QLineEdit()
         button = QPushButton("Поиск!")
