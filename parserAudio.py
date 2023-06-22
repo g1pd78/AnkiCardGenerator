@@ -1,0 +1,1 @@
+from wordClass import Word

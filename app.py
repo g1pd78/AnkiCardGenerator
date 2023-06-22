@@ -15,7 +15,11 @@ from PyQt6.QtWidgets import (
     QMenu, 
     QRadioButton,
     QStackedWidget,
+    QCheckBox,
 )
+
+import parserText
+import wordClass
 
 
 class MainWindow(QMainWindow):
@@ -89,12 +93,54 @@ class MainWindow(QMainWindow):
         layout.addWidget(label, 0, 0)
         layout.addWidget(button, 1, 1)
 
-        for i in range(35):
-            radio = QRadioButton(f"Банк, у которого был «актив» (в форме займа клиенту) в размере $100,000 в июне, к июлю может получить ноль.{i}", self)
-            radio.toggled.connect(self.showDetails)
-            layout.addWidget(radio, i+2, 0)
+        word = wordClass.Word()
+        word = parserText.cambridge_definition_parse('head')
+        button2 = QPushButton("Загрузить еще примеры!")
+        
+        selfMadeText = QLineEdit()
+
+        self.border = 5
+        self.counter = 0
+        self.counter2 = 0
+
+        def raise_border():
+            self.border += 1
+            print(self.border)
+            drawCheckBoxes()
+
+        button2.clicked.connect(raise_border)
+        
+        def drawCheckBoxes():  
+
+            for j, val in enumerate(word.examples.values(), self.counter2):
+                if self.counter2 >= self.border:
+                    break
+                radio = QCheckBox(word.definitions[self.counter2], self)
+                radio.toggled.connect(self.showDetails)
+                layout.addWidget(radio, self.counter + 2 + self.counter2, 0)
+                self.counter2 += 1
+                for i in val:
+                    radio = QCheckBox(i, self)
+                    radio.toggled.connect(self.showDetails)
+                    radio.setStyleSheet("QCheckBox { margin-left: 20px; }")
+                    layout.addWidget(radio, self.counter + 2 + self.counter2, 0)
+                    self.counter += 1
+                #print(self.counter2, self.border)
+            layout.addWidget(button2, self.counter + 2 + self.counter2, 0, Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(selfMadeText, self.counter + self.counter2 + 3, 0)
+
+
+
+
+
+        drawCheckBoxes()
 
         return layout
+    
+    
+
+        
+
 
         # if last one checked - create another one lineedit for my own text
 

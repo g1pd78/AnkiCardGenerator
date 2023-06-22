@@ -1,12 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-import re
-import collections
 from wordClass import Word
 
-def cambridge_definition_parse():
+def cambridge_definition_parse(search_word):
     site_link = "https://dictionary.cambridge.org/dictionary/english/"
-    search_word = "head"
     word = Word()
     header = {'User-Agent': 'Mozilla/5.0'}
 
@@ -29,3 +26,21 @@ def cambridge_definition_parse():
             definition_id += 1
 
         return word
+
+def lingvolive_parse():
+    site_link = "https://www.lingvolive.com/ru-ru/translate/en-ru/head?a=head"
+    word = Word()
+    header = {'User-Agent': 'Mozilla/5.0'}
+
+    response = requests.get(f"{site_link}", headers=header)
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    if response.status_code == 200:
+        block = soup.find('ol', {'class': '_1Mc81 _1TaPP'})
+        # print(block)
+        for i in block:
+            print(i.get_text())
+            print()
+
+
+#cambridge_definition_parse('zilch')
