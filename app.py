@@ -20,7 +20,7 @@ from PyQt6.QtWidgets import (
 
 import parserText
 import wordClass
-
+import appSettings
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -117,20 +117,16 @@ class MainWindow(QMainWindow):
                     break
                 radio = QCheckBox(word.definitions[self.counter2], self)
                 radio.toggled.connect(self.showDetails)
-                layout.addWidget(radio, self.counter + 2 + self.counter2, 0)
+                layout.addWidget(radio, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
                 self.counter2 += 1
                 for i in val:
                     radio = QCheckBox(i, self)
                     radio.toggled.connect(self.showDetails)
                     radio.setStyleSheet("QCheckBox { margin-left: 20px; }")
-                    layout.addWidget(radio, self.counter + 2 + self.counter2, 0)
+                    layout.addWidget(radio, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
                     self.counter += 1
-                #print(self.counter2, self.border)
-            layout.addWidget(button2, self.counter + 2 + self.counter2, 0, Qt.AlignmentFlag.AlignCenter)
-            layout.addWidget(selfMadeText, self.counter + self.counter2 + 3, 0)
-
-
-
+            layout.addWidget(button2, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0, Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(selfMadeText, self.counter + self.counter2 + appSettings.DefaultParams.ButtonAndLabelIndent + appSettings.DefaultParams.ButtonIndent, 0)
 
 
         drawCheckBoxes()
@@ -138,12 +134,6 @@ class MainWindow(QMainWindow):
         return layout
     
     
-
-        
-
-
-        # if last one checked - create another one lineedit for my own text
-
     def initLayout2(self, widget) -> QGridLayout:
         label = QLabel("Введите слово или словосочетание для поиска:")
         input = QLineEdit()
