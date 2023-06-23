@@ -1,10 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
-from wordClass import Word
+from wordClass import WordContainer
 
 def cambridge_definition_parse(search_word):
     site_link = "https://dictionary.cambridge.org/dictionary/english/"
-    word = Word()
+    word_container = WordContainer()
     header = {'User-Agent': 'Mozilla/5.0'}
 
     response = requests.get(f"{site_link}{search_word}", headers=header)
@@ -18,18 +18,18 @@ def cambridge_definition_parse(search_word):
             a = i.find('div', {'class': 'def ddef_d db'})
             b = i.find_all('div', {'class': 'examp dexamp'})
 
-            word.definitions.append(a.get_text())
+            word_container.definitions.append(a.get_text())
             for j in b:
                 example = j.get_text() if j else None
-                word.examples[definition_id].append(example)
+                word_container.examples[definition_id].append(example)
 
             definition_id += 1
 
-        return word
+        return word_container
 
 def lingvolive_parse():
     site_link = "https://www.lingvolive.com/ru-ru/translate/en-ru/head?a=head"
-    word = Word()
+    word_container = WordContainer()
     header = {'User-Agent': 'Mozilla/5.0'}
 
     response = requests.get(f"{site_link}", headers=header)

@@ -37,7 +37,8 @@ class MainWindow(QMainWindow):
         self.setup_scroll_area(self.scroll_area1)
         self.setup_scroll_area(self.scroll_area2)
 
-        self.word = wordClass.Word()
+        self.word_container = wordClass.WordContainer()
+        self.word = ''
         self.border = 5
         self.counter = 0
         self.counter2 = 0
@@ -87,8 +88,8 @@ class MainWindow(QMainWindow):
         self.main_layout.addWidget(arrows_container)
 
         # Подключаем кнопки к слотам переключения scroll area
-        left_arrow_button.clicked.connect(self.show_scroll_area1)
-        right_arrow_button.clicked.connect(self.show_scroll_area2)
+        left_arrow_button.clicked.connect(self.showScrollArea1)
+        right_arrow_button.clicked.connect(self.showScrollArea2)
 
     # инициализация страницы с информацией из кембриджского словаря
     def initLayout1(self, widget) -> QGridLayout:
@@ -116,27 +117,27 @@ class MainWindow(QMainWindow):
         self.selfMadeText = QLineEdit()
 
         # при запросе показать еще примеры увеличивается предел отображаемых checkbox'ов
-        def raise_border():
+        def raiseBorder():
             self.border += 5
             self.drawCheckBoxes()
-            self.buttonandtext()
+            self.userInputAndButton()
 
         # цепляю функции к кнопкам
-        self.more_examples_button.clicked.connect(raise_border)
-        self.search_button.clicked.connect(lambda: self.get_word(input_block))
+        self.more_examples_button.clicked.connect(raiseBorder)
+        self.search_button.clicked.connect(lambda: self.getWord(input_block))
         
         return self.definition_examples_layout
     
     # инициализация и размещение checkbox'ов
     def drawCheckBoxes(self):  
-        examples = list(self.word.examples.values())
+        examples = list(self.word_container.examples.values())
         for j in range(self.counter2,  len(examples)):
             # проверка выхода за границу\можно добавить в for
             if self.counter2 >= self.border:
                 break
 
             # инициализация checkbox для определения
-            checkbox = QCheckBox(self.word.definitions[self.counter2], self)
+            checkbox = QCheckBox(self.word_container.definitions[self.counter2], self)
             checkbox.toggled.connect(self.showDetails)
             self.definition_examples_layout.addWidget(checkbox, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
 
@@ -173,17 +174,21 @@ class MainWindow(QMainWindow):
               "  Name: ", self.sender().text())
         
     # пепеключение на первую зону
-    def show_scroll_area1(self):
+    def showScrollArea1(self):
         self.stacked_widget.setCurrentWidget(self.scroll_area1)
 
     # переключение на вторую зону
-    def show_scroll_area2(self):
+    def showScrollArea2(self):
         self.stacked_widget.setCurrentWidget(self.scroll_area2)
 
     # при нажатии на кнопку запускается парсер
-    def get_word(self, inputBlock):
+    def getWord(self, inputBlock):
                 search_word = inputBlock.text()
-                self.word = parserText.cambridge_definition_parse(search_word)
+                if search_word != self.word:
+                    self.border = 5
+                    self.counter = 0
+                    self.counter2 = 0
+                self.word_container = parserText.cambridge_definition_parse(search_word)
                 self.drawCheckBoxes()
                 self.userInputAndButton()
 
