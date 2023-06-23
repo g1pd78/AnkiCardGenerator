@@ -1,4 +1,3 @@
-# импорт
 import sys
 import parserText
 import wordClass
@@ -25,127 +24,135 @@ from PyQt6.QtWidgets import (
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+        # настройка основного окна приложения
         self.resize(900, 800)
         self.setWindowTitle("Anki Card Generator")
 
+        # основной стак виджет, в котором переключаюсь между двумя скролл эреа
         self.stacked_widget = QStackedWidget()
         self.scroll_area1 = QScrollArea()
         self.scroll_area2 = QScrollArea()
 
-        self.scroll_area1.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.scroll_area1.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.scroll_area1.setWidgetResizable(True)
+        # функция настройки ScrollArea
+        self.setup_scroll_area(self.scroll_area1)
+        self.setup_scroll_area(self.scroll_area2)
 
-        # make a function for this one
-        self.scroll_area2.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.scroll_area2.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.scroll_area2.setWidgetResizable(True)
-
-        self.setup_ui()
-
-
-    def setup_ui(self):
-        central_widget = QWidget()
-        self.main_layout = QVBoxLayout(central_widget)
-
-        widget1 = QWidget()
-        layout1 = self.initLayout1(widget1)
-        self.scroll_area1.setWidget(widget1)
-
-        widget2 = QWidget()
-        layout2 = self.initLayout2(widget2)
-        self.scroll_area2.setWidget(widget2)
-
-        self.stacked_widget.addWidget(self.scroll_area1)
-        self.stacked_widget.addWidget(self.scroll_area2)
-
-        self.main_layout.addWidget(self.stacked_widget)
-        self.setCentralWidget(central_widget)
-        
-    ''' 
-        Back and forward arrows ------
-        button1 = QPushButton("Scroll Area 1")
-        button2 = QPushButton("Scroll Area 2")
-        layout.addWidget(button1)
-        layout.addWidget(button2)
-
-        # Подключаем кнопки к слотам переключения scroll area
-        button1.clicked.connect(self.show_scroll_area1)
-        button2.clicked.connect(self.show_scroll_area2)'''
-
-    def show_scroll_area1(self):
-        self.stacked_widget.setCurrentWidget(self.scroll_area1)
-
-    def show_scroll_area2(self):
-        self.stacked_widget.setCurrentWidget(self.scroll_area2)
-
-    def initLayout1(self, widget) -> QGridLayout:
-        label = QLabel("Введите слово или словосочетание для поиска:")
-        inputBlock = QLineEdit()
-        inputBlock.setText('example')
-
-        self.button = QPushButton("Поиск!")
-        #button.clicked.connect(self.show_scroll_area2)
-
-        container = QWidget()
-        buttonandtextlayout = QGridLayout(container)
-        self.definition_examples_layout = QGridLayout(widget)
-        
-        self.definition_examples_layout.setContentsMargins(40, 40, 40, 40)
-        self.definition_examples_layout.setSpacing(40)
-
-        buttonandtextlayout.addWidget(inputBlock, 1, 0)
-        buttonandtextlayout.addWidget(label, 0, 0)
-        buttonandtextlayout.addWidget(self.button, 1, 1)
-        self.definition_examples_layout.setVerticalSpacing(10)  # Set size constraint for label
-        self.main_layout.addWidget(container)
-        
-        
-        
         self.word = wordClass.Word()
-        
-
-        self.button2 = QPushButton("Загрузить еще примеры!")
-        
-        self.selfMadeText = QLineEdit()
-
-        self.border = 1
+        self.border = 5
         self.counter = 0
         self.counter2 = 0
 
+        self.setup_ui()
+
+    # настройка ScrollArea, enable scroll option
+    @staticmethod        
+    def setup_scroll_area(area):
+        area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        area.setWidgetResizable(True)
+
+    # отрисовка интерфейса
+    def setup_ui(self):
+        # инициализирую главные widget и layout
+        main_widget = QWidget()
+        self.main_layout = QVBoxLayout(main_widget)
+
+        # инициализация первой scroll area
+        area_widget1 = QWidget()
+        layout1 = self.initLayout1(area_widget1)
+        self.scroll_area1.setWidget(area_widget1)
+
+        # инициализация второй scroll area
+        area_widget2 = QWidget()
+        layout2 = self.initLayout2(area_widget2)
+        self.scroll_area2.setWidget(area_widget2)
+
+        # помещаю scroll area в stacked widget
+        self.stacked_widget.addWidget(self.scroll_area1)
+        self.stacked_widget.addWidget(self.scroll_area2)
+        
+        # заливаю главный widget в основной layout, центрирование по main_widget
+        self.main_layout.addWidget(self.stacked_widget)
+        self.setCentralWidget(main_widget)
+
+        # последний блок с кнопками        
+        arrows_container = QWidget()
+        last_block = QGridLayout(arrows_container)
+
+        # добавление последних двух кнопок в главный layout
+        left_arrow_button = QPushButton("Previous options")
+        right_arrow_button = QPushButton("Next options")
+        last_block.addWidget(left_arrow_button, 0, 0)
+        last_block.addWidget(right_arrow_button, 0, 1)
+        self.main_layout.addWidget(arrows_container)
+
+        # Подключаем кнопки к слотам переключения scroll area
+        left_arrow_button.clicked.connect(self.show_scroll_area1)
+        right_arrow_button.clicked.connect(self.show_scroll_area2)
+
+    # инициализация страницы с информацией из кембриджского словаря
+    def initLayout1(self, widget) -> QGridLayout:
+
+        # инициализация объектов верхнего layout
+        label = QLabel("Введите слово или словосочетание для поиска:")
+        input_block = QLineEdit()
+        input_block.setText('example')
+        self.search_button = QPushButton("Поиск!")
+
+        # помещаю эти объекты в контейнер и заливаю виджет в основной layout
+        container = QWidget()
+        buttonandtextlayout = QGridLayout(container)
+        buttonandtextlayout.addWidget(input_block, 1, 0)
+        buttonandtextlayout.addWidget(label, 0, 0)
+        buttonandtextlayout.addWidget(self.search_button, 1, 1)
+        self.main_layout.addWidget(container)
+        
+        # layout для определений и примеров
+        self.definition_examples_layout = QGridLayout(widget)
+        self.definition_examples_layout.setContentsMargins(40, 20, 40, 20)
+        
+        # инициализация кнопки и поля для пользовательского ввода
+        self.more_examples_button = QPushButton("Загрузить еще примеры!")
+        self.selfMadeText = QLineEdit()
+
+        # при запросе показать еще примеры увеличивается предел отображаемых checkbox'ов
         def raise_border():
-            self.border += 1
+            self.border += 5
             self.drawCheckBoxes()
             self.buttonandtext()
 
-        self.button2.clicked.connect(raise_border)
-        self.button.clicked.connect(lambda: self.get_word(inputBlock))
+        # цепляю функции к кнопкам
+        self.more_examples_button.clicked.connect(raise_border)
+        self.search_button.clicked.connect(lambda: self.get_word(input_block))
         
-
         return self.definition_examples_layout
     
+    # инициализация и размещение checkbox'ов
     def drawCheckBoxes(self):  
         examples = list(self.word.examples.values())
         for j in range(self.counter2,  len(examples)):
+            # проверка выхода за границу\можно добавить в for
             if self.counter2 >= self.border:
                 break
-            radio = QCheckBox(self.word.definitions[self.counter2], self)
-            #radio.setStyleSheet("")
-            radio.toggled.connect(self.showDetails)
-            self.definition_examples_layout.addWidget(radio, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
-            #self.definition_examples_layout.setRowStretch(0, 0)
+
+            # инициализация checkbox для определения
+            checkbox = QCheckBox(self.word.definitions[self.counter2], self)
+            checkbox.toggled.connect(self.showDetails)
+            self.definition_examples_layout.addWidget(checkbox, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
+
             self.counter2 += 1
             for i in examples[j]:
-                radio = QCheckBox(i, self)
-                radio.toggled.connect(self.showDetails)
-                #radio.setStyleSheet("")
-                radio.setStyleSheet("QCheckBox { margin-left: 20px; }")
-                self.definition_examples_layout.addWidget(radio, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
-                #self.definition_examples_layout.setRowStretch(0, 0)
-                self.counter += 1
-            self.buttonandtext()
 
-    
+                # инициализация checkbox для примеров
+                checkbox = QCheckBox(i, self)
+                checkbox.toggled.connect(self.showDetails)
+                checkbox.setStyleSheet("QCheckBox { margin-left: 20px; }")
+                self.definition_examples_layout.addWidget(checkbox, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
+
+                self.counter += 1
+            self.userInputAndButton()
+
+    # второй layout
     def initLayout2(self, widget) -> QGridLayout:
         label = QLabel("Введите слово или словосочетание для поиска:")
         input = QLineEdit()
@@ -160,22 +167,30 @@ class MainWindow(QMainWindow):
 
         return layout
 
-    def show_state(self, s):
-        print("adfasdf")
-
+    # информация о нажатом чекбоксе
     def showDetails(self):
         print("Selected: ", self.sender().isChecked(),
               "  Name: ", self.sender().text())
+        
+    # пепеключение на первую зону
+    def show_scroll_area1(self):
+        self.stacked_widget.setCurrentWidget(self.scroll_area1)
 
+    # переключение на вторую зону
+    def show_scroll_area2(self):
+        self.stacked_widget.setCurrentWidget(self.scroll_area2)
+
+    # при нажатии на кнопку запускается парсер
     def get_word(self, inputBlock):
                 search_word = inputBlock.text()
                 self.word = parserText.cambridge_definition_parse(search_word)
                 self.drawCheckBoxes()
-                self.buttonandtext()
+                self.userInputAndButton()
 
-    def buttonandtext(self):
+    # Последняя кнопка в layout и lineedit для пользовательского ввода
+    def userInputAndButton(self):
         self.definition_examples_layout.addWidget(self.selfMadeText, self.counter + self.counter2 + appSettings.DefaultParams.ButtonAndLabelIndent, 0, Qt.AlignmentFlag.AlignTop)
-        self.definition_examples_layout.addWidget(self.button2, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2 + appSettings.DefaultParams.ButtonIndent, 0, Qt.AlignmentFlag.AlignBottom)
+        self.definition_examples_layout.addWidget(self.more_examples_button, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2 + appSettings.DefaultParams.ButtonIndent, 0, Qt.AlignmentFlag.AlignBottom)
 
 
 def main():
