@@ -1,5 +1,8 @@
 # импорт
 import sys
+import parserText
+import wordClass
+import appSettings
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
@@ -12,15 +15,12 @@ from PyQt6.QtWidgets import (
     QVBoxLayout, 
     QLineEdit, 
     QMainWindow, 
-    QMenu, 
     QRadioButton,
     QStackedWidget,
     QCheckBox,
+    QSizePolicy,
 )
 
-import parserText
-import wordClass
-import appSettings
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -37,16 +37,16 @@ class MainWindow(QMainWindow):
         self.scroll_area1.setWidgetResizable(True)
 
         # make a function for this one
-        self.scroll_area1.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.scroll_area1.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.scroll_area1.setWidgetResizable(True)
+        self.scroll_area2.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.scroll_area2.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.scroll_area2.setWidgetResizable(True)
 
         self.setup_ui()
 
 
     def setup_ui(self):
         central_widget = QWidget()
-        layout = QVBoxLayout(central_widget)
+        self.main_layout = QVBoxLayout(central_widget)
 
         widget1 = QWidget()
         layout1 = self.initLayout1(widget1)
@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.scroll_area1)
         self.stacked_widget.addWidget(self.scroll_area2)
 
-        layout.addWidget(self.stacked_widget)
+        self.main_layout.addWidget(self.stacked_widget)
         self.setCentralWidget(central_widget)
         
     ''' 
@@ -81,58 +81,70 @@ class MainWindow(QMainWindow):
 
     def initLayout1(self, widget) -> QGridLayout:
         label = QLabel("Введите слово или словосочетание для поиска:")
-        input = QLineEdit()
+        inputBlock = QLineEdit()
+        inputBlock.setText('example')
 
-        button = QPushButton("Поиск!")
-        button.clicked.connect(self.show_scroll_area2)
+        self.button = QPushButton("Поиск!")
+        #button.clicked.connect(self.show_scroll_area2)
 
-        layout = QGridLayout(widget)
-        layout.setContentsMargins(40, 40, 40, 40)
-        layout.setSpacing(10)
-        layout.addWidget(input, 1, 0)
-        layout.addWidget(label, 0, 0)
-        layout.addWidget(button, 1, 1)
-
-        word = wordClass.Word()
-        word = parserText.cambridge_definition_parse('head')
-        button2 = QPushButton("Загрузить еще примеры!")
+        container = QWidget()
+        buttonandtextlayout = QGridLayout(container)
+        self.definition_examples_layout = QGridLayout(widget)
         
-        selfMadeText = QLineEdit()
+        self.definition_examples_layout.setContentsMargins(40, 40, 40, 40)
+        self.definition_examples_layout.setSpacing(40)
 
-        self.border = 5
+        buttonandtextlayout.addWidget(inputBlock, 1, 0)
+        buttonandtextlayout.addWidget(label, 0, 0)
+        buttonandtextlayout.addWidget(self.button, 1, 1)
+        self.definition_examples_layout.setVerticalSpacing(10)  # Set size constraint for label
+        self.main_layout.addWidget(container)
+        
+        
+        
+        self.word = wordClass.Word()
+        
+
+        self.button2 = QPushButton("Загрузить еще примеры!")
+        
+        self.selfMadeText = QLineEdit()
+
+        self.border = 1
         self.counter = 0
         self.counter2 = 0
 
         def raise_border():
             self.border += 1
-            print(self.border)
-            drawCheckBoxes()
+            self.drawCheckBoxes()
+            self.buttonandtext()
 
-        button2.clicked.connect(raise_border)
+        self.button2.clicked.connect(raise_border)
+        self.button.clicked.connect(lambda: self.get_word(inputBlock))
         
-        def drawCheckBoxes():  
 
-            for j, val in enumerate(word.examples.values(), self.counter2):
-                if self.counter2 >= self.border:
-                    break
-                radio = QCheckBox(word.definitions[self.counter2], self)
-                radio.toggled.connect(self.showDetails)
-                layout.addWidget(radio, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
-                self.counter2 += 1
-                for i in val:
-                    radio = QCheckBox(i, self)
-                    radio.toggled.connect(self.showDetails)
-                    radio.setStyleSheet("QCheckBox { margin-left: 20px; }")
-                    layout.addWidget(radio, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
-                    self.counter += 1
-            layout.addWidget(button2, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0, Qt.AlignmentFlag.AlignCenter)
-            layout.addWidget(selfMadeText, self.counter + self.counter2 + appSettings.DefaultParams.ButtonAndLabelIndent + appSettings.DefaultParams.ButtonIndent, 0)
-
-
-        drawCheckBoxes()
-
-        return layout
+        return self.definition_examples_layout
     
+    def drawCheckBoxes(self):  
+        examples = list(self.word.examples.values())
+        for j in range(self.counter2,  len(examples)):
+            if self.counter2 >= self.border:
+                break
+            radio = QCheckBox(self.word.definitions[self.counter2], self)
+            #radio.setStyleSheet("")
+            radio.toggled.connect(self.showDetails)
+            self.definition_examples_layout.addWidget(radio, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
+            #self.definition_examples_layout.setRowStretch(0, 0)
+            self.counter2 += 1
+            for i in examples[j]:
+                radio = QCheckBox(i, self)
+                radio.toggled.connect(self.showDetails)
+                #radio.setStyleSheet("")
+                radio.setStyleSheet("QCheckBox { margin-left: 20px; }")
+                self.definition_examples_layout.addWidget(radio, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
+                #self.definition_examples_layout.setRowStretch(0, 0)
+                self.counter += 1
+            self.buttonandtext()
+
     
     def initLayout2(self, widget) -> QGridLayout:
         label = QLabel("Введите слово или словосочетание для поиска:")
@@ -148,13 +160,22 @@ class MainWindow(QMainWindow):
 
         return layout
 
-
     def show_state(self, s):
         print("adfasdf")
 
     def showDetails(self):
         print("Selected: ", self.sender().isChecked(),
               "  Name: ", self.sender().text())
+
+    def get_word(self, inputBlock):
+                search_word = inputBlock.text()
+                self.word = parserText.cambridge_definition_parse(search_word)
+                self.drawCheckBoxes()
+                self.buttonandtext()
+
+    def buttonandtext(self):
+        self.definition_examples_layout.addWidget(self.selfMadeText, self.counter + self.counter2 + appSettings.DefaultParams.ButtonAndLabelIndent, 0, Qt.AlignmentFlag.AlignTop)
+        self.definition_examples_layout.addWidget(self.button2, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2 + appSettings.DefaultParams.ButtonIndent, 0, Qt.AlignmentFlag.AlignBottom)
 
 
 def main():
