@@ -39,9 +39,9 @@ class MainWindow(QMainWindow):
 
         self.word_container = wordClass.WordContainer()
         self.word = ''
-        self.border = 5
-        self.counter = 0
-        self.counter2 = 0
+        self.border = appSettings.DefaultParams.defaultDefinitionCount
+        self.example_counter = 0
+        self.definition_counter = 0
         self.checkbox_list = []
 
         self.setup_ui()
@@ -119,7 +119,7 @@ class MainWindow(QMainWindow):
 
         # при запросе показать еще примеры увеличивается предел отображаемых checkbox'ов
         def raiseBorder():
-            self.border += 5
+            self.border += appSettings.DefaultParams.borderIncreaseValue
             self.drawCheckBoxes()
             self.userInputAndButton()
 
@@ -133,27 +133,27 @@ class MainWindow(QMainWindow):
     def drawCheckBoxes(self):  
         examples = list(self.word_container.examples.values())
 
-        for j in range(self.counter2,  len(examples)):
+        for j in range(self.definition_counter,  len(examples)):
             # проверка выхода за границу\можно добавить в for
-            if self.counter2 >= self.border:
+            if self.definition_counter >= self.border:
                 break
 
             # инициализация checkbox для определения
-            checkbox = QCheckBox(self.word_container.definitions[self.counter2], self)
+            checkbox = QCheckBox(self.word_container.definitions[self.definition_counter], self)
             checkbox.toggled.connect(self.showDetails)
-            self.definition_examples_layout.addWidget(checkbox, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
+            self.definition_examples_layout.addWidget(checkbox, self.example_counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.definition_counter, 0)
             self.checkbox_list.append(checkbox)
 
-            self.counter2 += 1
+            self.definition_counter += 1
             for i in examples[j]:
                 # инициализация checkbox для примеров
                 checkbox = QCheckBox(i, self)
                 checkbox.toggled.connect(self.showDetails)
                 checkbox.setStyleSheet("QCheckBox { margin-left: 20px; }")
-                self.definition_examples_layout.addWidget(checkbox, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2, 0)
+                self.definition_examples_layout.addWidget(checkbox, self.example_counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.definition_counter, 0)
                 self.checkbox_list.append(checkbox)
 
-                self.counter += 1
+                self.example_counter += 1
             self.userInputAndButton()
 
     # второй layout
@@ -188,9 +188,9 @@ class MainWindow(QMainWindow):
     def getWord(self, inputBlock):
                 search_word = inputBlock.text()
                 if search_word != self.word:
-                    self.border = 5
-                    self.counter = 0
-                    self.counter2 = 0
+                    self.border = appSettings.DefaultParams.defaultDefinitionCount
+                    self.definition_counter = 0
+                    self.example_counter = 0
                     self.getCheckedBoxes()
                     self.removeAllCheckboxes(self.definition_examples_layout)
 
@@ -200,8 +200,8 @@ class MainWindow(QMainWindow):
 
     # Последняя кнопка в layout и lineedit для пользовательского ввода
     def userInputAndButton(self):
-        self.definition_examples_layout.addWidget(self.selfMadeText, self.counter + self.counter2 + appSettings.DefaultParams.ButtonAndLabelIndent, 0, Qt.AlignmentFlag.AlignTop)
-        self.definition_examples_layout.addWidget(self.more_examples_button, self.counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.counter2 + appSettings.DefaultParams.ButtonIndent, 0, Qt.AlignmentFlag.AlignBottom)
+        self.definition_examples_layout.addWidget(self.selfMadeText, self.example_counter + self.definition_counter + appSettings.DefaultParams.ButtonAndLabelIndent, 0, Qt.AlignmentFlag.AlignTop)
+        self.definition_examples_layout.addWidget(self.more_examples_button, self.example_counter + appSettings.DefaultParams.ButtonAndLabelIndent + self.definition_counter + appSettings.DefaultParams.ButtonIndent, 0, Qt.AlignmentFlag.AlignBottom)
 
     def removeAllCheckboxes(self, layout):
         for checkbox in self.checkbox_list:
@@ -216,6 +216,7 @@ class MainWindow(QMainWindow):
             if checkbox.isChecked():
                 finalCard.append(checkbox.text())
         print(finalCard)
+        # сделать соответствие примеров определениям??
 
 def main():
     
