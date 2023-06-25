@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from wordClass import WordContainer
 
-def cambridge_definition_parse(search_word):
+def cambridge_parse(search_word):
     site_link = "https://dictionary.cambridge.org/dictionary/english/"
     word_container = WordContainer()
     header = {'User-Agent': 'Mozilla/5.0'}
@@ -27,20 +27,26 @@ def cambridge_definition_parse(search_word):
 
         return word_container
 
-def lingvolive_parse():
-    site_link = "https://www.lingvolive.com/ru-ru/translate/en-ru/head?a=head"
+def collins_parse(search_word):
+    site_link = "https://www.collinsdictionary.com/dictionary/english/"
     word_container = WordContainer()
     header = {'User-Agent': 'Mozilla/5.0'}
 
-    response = requests.get(f"{site_link}", headers=header)
+    response = requests.get(f"{site_link}{search_word}", headers=header)
     soup = BeautifulSoup(response.content, 'html.parser')
 
     if response.status_code == 200:
-        block = soup.find('ol', {'class': '_1Mc81 _1TaPP'})
-        # print(block)
+        block = soup.find_all('div', {'class': 'hom'})
         for i in block:
-            print(i.get_text())
-            print()
+            l = i.find_all('div', {'class': 'def'})
+            #print(len(l))
+            for j in l:
+                b = j.get_text().replace('\n\n', '\n')
+                if b != '' or b != '\n':
+                    print(b)
+            #l = i.get_text().replace('\n', '', 1)
+            #if l != '' or l != '\n':
+            #    print(l) ---- top 20 ???
 
 
-#cambridge_definition_parse('zilch')
+collins_parse('zilch')
