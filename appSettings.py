@@ -5,3 +5,4 @@ class DefaultParams(IntFlag):
     ButtonIndent = 1
     borderIncreaseValue = 5
     defaultDefinitionCount = 5
+    maxCollinsDefinitions = 10

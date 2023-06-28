@@ -62,14 +62,30 @@ class MainWindow(QMainWindow):
         main_widget = QWidget()
         self.main_layout = QVBoxLayout(main_widget)
 
+        # инициализация объектов верхнего layout
+        label = QLabel("Введите слово или словосочетание для поиска:")
+        self.input_block = QLineEdit()
+        self.input_block.setText('example')
+        self.search_button = QPushButton("Поиск!")
+
+        # помещаю эти объекты в контейнер и заливаю виджет в основной layout
+        container = QWidget()
+        buttonandtextlayout = QGridLayout(container)
+        buttonandtextlayout.addWidget(self.input_block, 1, 0)
+        buttonandtextlayout.addWidget(label, 0, 0)
+        buttonandtextlayout.addWidget(self.search_button, 1, 1)
+        self.main_layout.addWidget(container)
+
+        self.search_button.clicked.connect(self.getWord)
+
         # инициализация первой scroll area
         area_widget1 = QWidget()
-        layout1 = self.initLayout1(area_widget1)
+        layout1 = self.cambridgeDictionarySearch(area_widget1)
         self.scroll_area1.setWidget(area_widget1)
 
         # инициализация второй scroll area
         area_widget2 = QWidget()
-        layout2 = self.initLayout2(area_widget2)
+        layout2 = self.collinsDictionarySearch(area_widget2)
         self.scroll_area2.setWidget(area_widget2)
 
         # помещаю scroll area в stacked widget
@@ -87,8 +103,8 @@ class MainWindow(QMainWindow):
         # добавление последних двух кнопок в главный layout
         left_arrow_button = QPushButton("Previous options")
         right_arrow_button = QPushButton("Next options")
-        last_block.addWidget(left_arrow_button, 0, 0)
-        last_block.addWidget(right_arrow_button, 0, 1)
+        last_block.addWidget(left_arrow_button, 2, 0)
+        last_block.addWidget(right_arrow_button, 2, 1)
         self.main_layout.addWidget(arrows_container)
 
         # Подключаем кнопки к слотам переключения scroll area
@@ -96,22 +112,8 @@ class MainWindow(QMainWindow):
         right_arrow_button.clicked.connect(self.showScrollArea2)
 
     # инициализация страницы с информацией из кембриджского словаря
-    def initLayout1(self, widget) -> QGridLayout:
-
-        # инициализация объектов верхнего layout
-        label = QLabel("Введите слово или словосочетание для поиска:")
-        self.input_block = QLineEdit()
-        self.input_block.setText('example')
-        self.search_button = QPushButton("Поиск!")
-
-        # помещаю эти объекты в контейнер и заливаю виджет в основной layout
-        container = QWidget()
-        buttonandtextlayout = QGridLayout(container)
-        buttonandtextlayout.addWidget(self.input_block, 1, 0)
-        buttonandtextlayout.addWidget(label, 0, 0)
-        buttonandtextlayout.addWidget(self.search_button, 1, 1)
-        self.main_layout.addWidget(container)
-        
+    def cambridgeDictionarySearch(self, widget) -> QGridLayout:
+       
         # layout для определений и примеров
         self.definition_examples_layout = QGridLayout(widget)
         #self.definition_examples_layout.setContentsMargins(40, 40, 40, 40)
@@ -126,18 +128,17 @@ class MainWindow(QMainWindow):
         self.labelDefinitionsExamples.setMaximumHeight(20)
         self.labelDefinitionsExamples.setStyleSheet("color: black; font: bold 15px; background: transparent; border: none; margin: 0px; padding: 0px;")
 
-        # при запросе показать еще примеры увеличивается предел отображаемых checkbox'ов
-        def raiseBorder():
+        # цепляю функции к кнопкам
+        self.more_examples_button.clicked.connect(self.raiseBorder)
+        
+        return self.definition_examples_layout
+    
+    # при запросе показать еще примеры увеличивается предел отображаемых checkbox'ов
+    def raiseBorder(self):
             self.border += appSettings.DefaultParams.borderIncreaseValue
             self.drawCheckBoxes()
             self.userInputAndButton()
 
-        # цепляю функции к кнопкам
-        self.more_examples_button.clicked.connect(raiseBorder)
-        self.search_button.clicked.connect(self.getWord)
-        
-        return self.definition_examples_layout
-    
     # инициализация и размещение checkbox'ов
     def drawCheckBoxes(self):  
         examples = list(self.word_container.examples.values())
@@ -165,7 +166,7 @@ class MainWindow(QMainWindow):
             self.userInputAndButton()
 
     # второй layout
-    def initLayout2(self, widget) -> QGridLayout:
+    def collinsDictionarySearch(self, widget) -> QGridLayout:
         label = QLabel("Введите слово или словосочетание для поиска:")
         input = QLineEdit()
         button = QPushButton("Поиск!")
@@ -225,13 +226,10 @@ class MainWindow(QMainWindow):
         for checkbox in self.checkbox_list:
             if checkbox.isChecked():
                 finalCard.append(checkbox.text())
-        print(finalCard)
-        # сделать соответствие примеров определениям??
 
     def keyPressEvent(self, event) -> None:
         if event.key() == Qt.Key.Key_Return.value:
-            print("asdfasdf")
-            self.getWord(self.input_block)
+            self.getWord()
 
 def main():
     
