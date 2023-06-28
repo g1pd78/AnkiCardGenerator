@@ -54,5 +54,9 @@ def collins_parse(search_word):
                     example = example_block.get_text() if example_block else None
                     word_container.examples[definition_id].append(example)
             definition_id += 1
-            
-    return word_container
+
+    return 
+
+# TODO 
+# обработка текста
+# проверка на \n и пустоты 
