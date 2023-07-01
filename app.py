@@ -192,7 +192,6 @@ class MainWindow(QMainWindow):
         self.collins_definition_examples_layout = QGridLayout(widget)
         self.collins_definition_examples_layout.setSpacing(20)
 
-
         # инициализация кнопки и поля для пользовательского ввода
         self.collins_more_examples_button = QPushButton("Загрузить еще примеры!")
         self.collins_selfMadeText = QLineEdit()

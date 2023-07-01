@@ -55,7 +55,7 @@ def collins_parse(search_word):
                     word_container.examples[definition_id].append(example)
             definition_id += 1
 
-    return 
+    return word_container
 
 # TODO 
 # обработка текста
