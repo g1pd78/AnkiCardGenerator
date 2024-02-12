@@ -5,6 +5,7 @@ from aiogram.filters import CommandStart, Command
 import re
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import F
+from utils.text import text_welcome_message
 
 API_TOKEN = ""
 
@@ -23,7 +24,8 @@ async def publ(message: Message):
 
 @dp.message(Command("start"))
 async def start(message: Message):
-    print(message.chat.id)
+    await message.answer(message.chat.id, text_welcome_message)
+    
     #await bot.send_message(message.chat.id, "test", disable_notification=True)
 
     button1 = KeyboardButton(text="Загрузить")

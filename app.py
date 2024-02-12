@@ -1,12 +1,10 @@
 import sys
 
 from PyQt6 import QtGui
-import parserText
+import parsers.text.parserText as parserText
 import wordClass
 import appSettings
 import collections
-
-
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QPushButton, 
