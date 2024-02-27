@@ -15,8 +15,9 @@ engine = create_engine(f'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}/{DB_NAME
 Session = sessionmaker(bind=engine)
 session = Session()
 
-class Employee(Base):
+class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     nickname = Column(String)
     password = Column(String)
+

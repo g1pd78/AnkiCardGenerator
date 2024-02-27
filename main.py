@@ -5,9 +5,8 @@ from aiogram.filters import CommandStart, Command
 import re
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import F
-from utils.text import text_welcome_message
-
-API_TOKEN = ""
+from utils.textRu import text_welcome_message
+from .secrets.keys import API_TOKEN
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
@@ -25,9 +24,9 @@ async def publ(message: Message):
 @dp.message(Command("start"))
 async def start(message: Message):
     await message.answer(message.chat.id, text_welcome_message)
-    
+    print(message.location) # test location for custom translations
     #await bot.send_message(message.chat.id, "test", disable_notification=True)
-
+    
     button1 = KeyboardButton(text="Загрузить")
     button2 = KeyboardButton(text="Выбрать")
     button3 = KeyboardButton(text="Опубликовать")
