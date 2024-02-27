@@ -6,34 +6,44 @@ import re
 from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import F
 from utils.textRu import text_welcome_message
-from .secrets.keys import API_TOKEN
+from settings.keys import API_TOKEN
+
+from parsers.text.parserText import cambridge_parse, collins_parse
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-@dp.message(F.text.lower() == "загрузить")
+@dp.message(F.text.lower() == "искать слово")
 async def loader(message: Message = None):
-    pass
     await start(message)
 
-@dp.message(F.text.lower() == "опубликовать")
+@dp.message(F.text.lower() == "выбрать колоду")
 async def publ(message: Message):
     await start(message)
 
+# @dp.message("apple" in F.text.lower())
+# async def find_word(message: Message):
+#     await message.answer("Hey!")
 
 @dp.message(Command("start"))
 async def start(message: Message):
-    await message.answer(message.chat.id, text_welcome_message)
-    print(message.location) # test location for custom translations
+    await message.answer(text=text_welcome_message)
+    print(message.from_user.language_code) # test location for custom translations
     #await bot.send_message(message.chat.id, "test", disable_notification=True)
     
-    button1 = KeyboardButton(text="Загрузить")
-    button2 = KeyboardButton(text="Выбрать")
-    button3 = KeyboardButton(text="Опубликовать")
+    button1 = KeyboardButton(text="Искать слово")
+    button2 = KeyboardButton(text="Выбрать колоду")
+    button3 = KeyboardButton(text="Настройки")
 
     btn = ReplyKeyboardMarkup(keyboard=[[button1, button2, button3]], resize_keyboard=True)
-    await message.answer("Загрузить новые посты или отобрать для публикации?", reply_markup=btn, )
+    await message.answer("Выберите опцию!", reply_markup=btn, )
 
+@dp.message(F.text.lower())
+async def find_word(message: Message):
+    word = cambridge_parse(message.text)
+    word.definitions += collins_parse(message.text).definitions
+    for w in word.definitions:
+        await message.answer(w)
 
 async def main():
     dp.message.register(start, CommandStart())
