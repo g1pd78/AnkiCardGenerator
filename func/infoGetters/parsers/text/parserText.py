@@ -1,12 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
-from wordClass import WordContainer
+from wordClass import DefinitionContainer
 import appSettings
 
 
-def cambridge_parse(search_word):
+async def cambridge_parse(search_word):
     site_link = "https://dictionary.cambridge.org/dictionary/english/"
-    word_container = WordContainer()
+    word_container = DefinitionContainer()
     header = {'User-Agent': 'Mozilla/5.0'}
 
     response = requests.get(f"{site_link}{search_word}", headers=header)
@@ -29,9 +29,9 @@ def cambridge_parse(search_word):
 
         return word_container
 
-def collins_parse(search_word):
+async def collins_parse(search_word):
     site_link = "https://www.collinsdictionary.com/dictionary/english/"
-    word_container = WordContainer()
+    word_container = DefinitionContainer()
     header = {'User-Agent': 'Mozilla/5.0'}
     max_definitions = appSettings.DefaultParams.maxCollinsDefinitions
     definition_id = 0
@@ -55,7 +55,14 @@ def collins_parse(search_word):
                     word_container.examples[definition_id].append(example)
             definition_id += 1
 
-    return word_container
+        return word_container
+    return False
+
+async def parse_text(word):
+    word_container = cambridge_parse(word) + collins_parse(word)
+    if word_container:
+        return word_container
+    return False
 
 # TODO 
 # обработка текста
