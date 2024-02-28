@@ -1,16 +1,19 @@
 from sqlalchemy import select, delete
-from loader import Word, session, engine
+from loader import Word, session, engine, WordDefinitions
+from wordClass import DefinitionContainer
 
 class WordManager:
 
     @staticmethod
-    def add_word():
-        # try:
-        #     new_user = Word(user_id=user_id)
-        #     session.add(new_user)
-        #     session.commit()
-        # except:
-        #     return False
+    def add_word(word: str, word_container: DefinitionContainer):
+        try:
+            new_word = Word(word=word)
+            new_definition = WordDefinitions()
+
+            session.add(new_word)
+            session.commit()
+        except:
+            return False
         pass
 
     @staticmethod

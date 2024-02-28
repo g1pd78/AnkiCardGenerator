@@ -1,6 +1,6 @@
 import re
 from tables.wordManager import word_manager
-from func.infoGetters.parsers.text import cambridge_parse, collins_parse
+from func.infoGetters.parsers.text import parse_text
 
 async def check_word(word: str) -> bool:
     pattern = r'[0-9!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]'
@@ -13,5 +13,6 @@ async def get_word(word: str):
     if word_manager.word_in_db(word):
        word_container = word_manager.get_word()
     else:
-        word_container = cambridge_parse(word)
-        
+        word_container = parse_text(word)
+        if word_container:
+            word_manager.add_word(word, word_container)

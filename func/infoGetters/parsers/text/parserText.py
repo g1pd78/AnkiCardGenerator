@@ -60,9 +60,7 @@ async def collins_parse(search_word):
 
 async def parse_text(word):
     word_container = cambridge_parse(word) + collins_parse(word)
-    if word_container:
-        return word_container
-    return False
+    return word_container
 
 # TODO 
 # обработка текста
