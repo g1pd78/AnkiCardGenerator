@@ -1,6 +1,6 @@
 import re
 from tables.wordManager import word_manager
-from func.infoGetters.parsers.text import parse_text
+from parsers.text import parse_text
 
 async def check_word(word: str) -> bool:
     pattern = r'[0-9!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]'

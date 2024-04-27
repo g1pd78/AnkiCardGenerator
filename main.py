@@ -40,8 +40,8 @@ async def start(message: Message):
 
 @dp.message(F.text.lower())
 async def find_word(message: Message):
-    word = cambridge_parse(message.text)
-    word.definitions += collins_parse(message.text).definitions
+    word = await cambridge_parse(message.text)
+    word.definitions += (await collins_parse(message.text)).definitions
     for w in word.definitions:
         await message.answer(w)
 
